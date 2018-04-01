@@ -8,9 +8,9 @@ class objeto {
 		this.tamano = tamano;
 
 	}
-	choque(objeto){
-		var difx = math.abs(this.x - obj.x);
-		var dify = math.abs(this.y - obj.y);
+	choque(obj){
+		var difx = Math.abs(this.x - obj.x);
+		var dify = Math.abs(this.y - obj.y);
 		if(difx >= 0 && difx < tamano && dify >=0 && dify < tamano){
 			return true;
 		} else {
@@ -25,18 +25,41 @@ class Cola  extends  objeto{
 		super();
 		this.x = x;
 		this.y = y;
+		this.siguiente = null ; 
 
 	}
 // por aqui quedamos 
 	dibujar(ctx){
+		if(this.siguiente != null){
+			this.siguiente.dibujar(ctx);
+		}
 		ctx.fillStyle="#dc0bf9";
 		ctx.fillRect(this.x, this.y, this.tamano,this.tamano);
 	}
 
 	setxy(x,y){
+		if(this.siguiente != null){
+
+		this.siguiente.setxy(this.x, this.y)
+
+		
+	}
 		this.x = x;
 		this.y = y;
 	}
+	meter () {
+		if (this.siguiente == null){
+			this.siguiente = new Cola(this.x, this.y);
+		} else {
+			this.siguiente.meter();
+		}
+
+
+	}
+	versiguiente(){
+		return this.siguiente;
+	}
+	
 
 }
 
@@ -122,6 +145,42 @@ function control(event){
 
 }
 
+function finJuego(){
+
+xdir=0;
+ydir=0;
+ejex=true;
+ejey=true;
+cabeza = new Cola(20,20);
+comida = new Comida();
+alert ("perdiste manco");
+
+
+
+}
+function choquePared(){
+	if ( cabeza.x < 0  || cabeza.x > 590 || cabeza.y < 0 || cabeza.y >590 ){
+		finJuego();
+	}
+}
+
+function choqueCuerpo(){
+	var temp = null;
+	try{
+		temp = cabeza.versiguiente().versiguiente();
+
+	}catch(err){
+		temp = null;
+	}
+	while( temp != null){
+		if(cabeza.choque(temp)){
+			//fin del juego
+			finJuego();
+		}else{
+			temp = temp.versiguiente();
+		}
+	}
+}
 
 function dibujar(){
 
@@ -139,8 +198,14 @@ function dibujar(){
 }
 
 function main(){
+	choqueCuerpo();
+	choquePared();
 	dibujar();
 	movimiento();
+	if(cabeza.choque(comida)){
+		comida.colocar();
+		cabeza.meter();
+	}
 	
 
 }
